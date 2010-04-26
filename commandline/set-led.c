@@ -29,19 +29,13 @@ respectively.
 
 static void usage(char *name)
 {
-    fprintf(stderr, "usage:\n");
-    fprintf(stderr, "  %s on ....... turn on LED\n", name);
-    fprintf(stderr, "  %s off ...... turn off LED\n", name);
-    fprintf(stderr, "  %s status ... ask current status of LED\n", name);
-#if ENABLE_TEST
-    fprintf(stderr, "  %s test ..... run driver reliability test\n", name);
-#endif /* ENABLE_TEST */
+    fprintf(stderr, "usage: %s <red> <green> <pulse>\n", name);
 }
 
 int main(int argc, char **argv)
 {
   usb_dev_handle      *handle = NULL;
-  const unsigned char rawVid[2] = {USB_CFG_VENDOR_ID}; 
+  const unsigned char rawVid[2] = {USB_CFG_VENDOR_ID};
   const unsigned char rawPid[2] = {USB_CFG_DEVICE_ID};
   char vendor[] = {USB_CFG_VENDOR_NAME, 0};
   char product[] = {USB_CFG_DEVICE_NAME, 0};
@@ -62,29 +56,19 @@ int main(int argc, char **argv)
         exit(1);
     }
 
-    /*if(strcasecmp(argv[1], "status") == 0){
-        cnt = usb_control_msg(handle, USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN, CUSTOM_RQ_GET_STATUS, 0, 0, buffer, sizeof(buffer), 5000);
-        if(cnt < 1){
-            if(cnt < 0){
-                fprintf(stderr, "USB error: %s\n", usb_strerror());
-            }else{
-                fprintf(stderr, "only %d bytes received.\n", cnt);
-            }
-        }else{
-            printf("LED is %s\n", buffer[0] ? "on" : "off");
-        }
-    }
-    else*/ if(strcasecmp(argv[1], "rgb") == 0)
-	{
-		int r = atoi(argv[2]);
-		int g = atoi(argv[3]);
-		int b = atoi(argv[4]);
-		cnt = usb_control_msg(handle, USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT, CUSTOM_RQ_SET_RED, r, 0, buffer, 0, 5000);
-		cnt = usb_control_msg(handle, USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT, CUSTOM_RQ_SET_GREEN, g, 0, buffer, 0, 5000);
-		cnt = usb_control_msg(handle, USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT, CUSTOM_RQ_SET_BLUE, b, 0, buffer, 0, 5000);
-		
-	}
-	else{
+
+
+  if(argc == 4)
+  {
+    int r = atoi(argv[1]);
+    int g = atoi(argv[2]);
+    int b = atoi(argv[3]);
+    cnt = usb_control_msg(handle, USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT, CUSTOM_RQ_SET_RED, r, 0, buffer, 0, 5000);
+    cnt = usb_control_msg(handle, USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT, CUSTOM_RQ_SET_GREEN, g, 0, buffer, 0, 5000);
+    cnt = usb_control_msg(handle, USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT, CUSTOM_RQ_SET_PULSE, b, 0, buffer, 0, 5000);
+
+  }
+  else{
         usage(argv[0]);
         exit(1);
     }
