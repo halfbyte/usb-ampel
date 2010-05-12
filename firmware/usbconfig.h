@@ -24,6 +24,12 @@ section at the end of this file).
 + Then edit it accordingly.
 */
 
+#ifndef __ASSEMBLER__
+extern void usbEventResetReady(void);
+#endif
+#define USB_RESET_HOOK(isReset)         if(!isReset){usbEventResetReady();}
+
+
 /* ---------------------------- Hardware Config ---------------------------- */
 
 #define USB_CFG_IOPORTNAME      B
